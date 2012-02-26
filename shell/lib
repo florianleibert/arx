@@ -25,10 +25,12 @@ screen_setup() {
   fi
 }
 
-# Launch command in initialized screen.
+# Launch command in initialized screen, after calling back in to this library
+# to reset the working directory (since the screen is running in /).
 screen_() {
+  this_script="`canonical_path "$0"`"
   screen_setup
-  screen_S      -X screen 0 "$@"
+  screen_S      -X screen 0 "$this_script" cd_ "`pwd -P`" "$@"
   screen_S      -X eval 'select 1' kill
   echo "New screen is:" 1>&2
   echo "`tag`"
@@ -71,6 +73,18 @@ general_redirect() {
   # Cause whatever output is produced by the output logger to go back on
   # STDOUT, similar to the case for the error logger.
 } | "$c" "$o" 2>&1 1>&1
+}
+
+
+# Portably determine a canonical path for the first argument. Intended to
+# emulate `readlink --canonical' on systems that have a readlink which
+# supports it.
+canonical_path() {
+  ( cd "`dirname "$1"`"
+    d="`pwd -P`"
+    echo "$d"/"`basename "$1"`"
+  )
+# LOLziness -- the canonical path of '.' is always '/a/b/c/.'
 }
 
 

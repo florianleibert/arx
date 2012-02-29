@@ -18,8 +18,16 @@ go() {
 # to start a subshell; it's not so terrible that we do it by way of calling
 # lib, in a new shell.
 usercode() {
-  "$dir"/lib screen_ "$dir"/lib cd_ "$cwd" source_ "$dir"/env exec_ \
-    lol roflcopter "$@"
+  "$dir"/lib \
+    # flock_ \
+    # screen_ \
+    # tmux_ \
+    dir_dealloc "$dir" \
+    # logger_ \
+    # tee_    \
+    source_ "$dir"/env \
+    # lxc_ \
+    exec_ lol roflcopter "$@"
 }
 # Create staging area and set a trap to ensure its removal.
 tmp() {
